@@ -1,0 +1,100 @@
+html {
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  /* display: flex; */
+  /* overflow: hidden; */
+}
+footer {
+  background-color: rgb(251, 241, 235);
+}
+
+#stack {
+  border: 3px solid silver;
+  position: relative;
+  height: 85svh;
+}
+
+#stack  #myCanvas {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+ }
+
+#stack  #cropCanvas {
+ position: fixed;
+ left: 0;
+ top: 0;
+ border: 3px solid red;
+ touch-action: none;
+ /* fill: black; 
+ position: fixed;
+ top: 50%;
+ left: 50%;
+ transform: translate(-25%, -25%); */
+ z-index: 1;
+}
+
+.centerParent {
+  display: flex;
+  height: 3svh;
+  justify-content: space-evenly;
+}
+
+.infoLabel {
+  font-family: arial;
+  font-size: 14px;
+  color: rgb(162, 162, 162);
+}
+
+.buttonBar {
+  /* position: absolute;   */
+  height: 7svh;
+  display: flex; 
+  bottom: 5;
+  /* right: 5 */
+  justify-content: center;
+}
+
+#buttonTable {
+  table-layout: auto;
+  width: 500px;
+}
+
+/* td {
+  padding: 8px 10px;
+} */
+
+/* button {
+  width: 80px;
+} */
+
+[popover]:popover-open {
+
+  transform: translate(205px);
+  transition: all 0.7s allow-discrete;
+}
+
+
+[popover] {
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  inset: unset;
+  top: 5px;
+  left: -205px;
+  margin: 0;
+}
+
+/* 
+@starting-style {
+  [popover]:popover-open {
+    transform: translate(-205px);
+    
+  }
+}
+  */
+

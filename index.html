@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-US"> 
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, interactive-widget=resizes-visual user-scalable=yes initial-scale=1.0">
+    <title>Canvas</title>
+    <!-- <script>src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/2.0.0-alpha.4/piexifjs.js"</script> -->
+    <link rel="manifest" href="manifest.json" />
+    <script type="module" src="./node_modules/piexifjs/piexif.js" ></script>
+    <script type="module" src="script.js" defer></script>
+
+    <!-- Register the app's service worker. -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").then(
+          (registration) => {
+            console.log("Service worker registration successful:", registration);
+          },
+          (error) => {
+            console.error(`Service worker registration failed: ${error}`);
+          },
+        );
+      } else {
+        console.error("Service workers are not supported.");
+      }
+    </script>
+
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+  </div>
+  <div id="mypopover" popover>
+    <div>
+      <table>
+        <tr>
+          <td>
+            <label for="row-select">Number of rows</label>
+            <select name="rows" id="row-select" selectedIndex="2">
+              <option value="">--Choose rows--</option>
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="7">7</option>
+              <option value="9">9</option>
+            </select>
+          </td>
+          <td>
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button id="drawGrid2">Draw</button>
+          </td>
+          <td>
+            <button id="gridConfig">Apply</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>  
+    <div id="stack" >
+    <canvas id="myCanvas">
+      <p>Add suitable fallback here.</p>
+    </canvas>
+    <canvas id="cropCanvas" class="myCropCanvas">
+      <p>Add suitable fallback here.</p>
+    </canvas>
+    </div>
+    <div class="centerParent">
+      <label class="infoLabel" id="imageInfo">Open an image</label>
+      <label class="infoLabel" id="gridInfo">Grid Size: </label>
+    </div>
+    <footer>
+    <div class="buttonBar">
+      <table id="buttonTable">
+        <tr>
+          <td>
+            <input
+              type="file"
+              id="nonFilePicker"
+              accept="image/*" 
+              style="display:none"/>                 
+            <button id="openButton">Open</button>   
+          </td>
+          <td>
+            <button id="gridButton">Grid</button>
+          </td>
+          <td>
+            <button id="cropButton">Crop</button>
+          </td>
+          <td>
+            <button id="saveButton">Save</button>
+          </td>
+          <td>
+            <button id="downloadButton">Download</button>
+          </td>
+          <td>
+            <button popovertarget="mypopover" id="configure">Configure</button>
+          </td>
+          <!-- <td>
+            <label id="imageInfo">Open an image</label>
+          </td> -->
+      </tr>
+    </table>
+   </div>
+  </footer> 
+</html>

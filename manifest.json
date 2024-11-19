@@ -1,0 +1,17 @@
+{
+    "lang": "en-us",
+    "name": "Image Grid and Crop",
+    "short_name": "Image GridnCrop",
+    "description": "A basic jpeg Image Processor for Artists",
+    "start_url": "/",
+    "background_color": "#2f3d58",
+    "theme_color": "#2f3d58",
+    "orientation": "any",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/launcher_foreground.png",
+            "sizes": "432x432"
+        }
+    ]
+}
