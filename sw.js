@@ -12,7 +12,7 @@ const APP_STATIC_RESOURCES = [
   "/script.js",
   "/manifest.json",
   "/launcher_foreground.png",
-  "/node_modules/piexifjs/piexif.js"
+  "/piexif.js"
 ];
 
 // On install, cache the static resources
