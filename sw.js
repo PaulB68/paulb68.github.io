@@ -7,12 +7,12 @@ const CACHE_NAME = `grid-n-crop-${VERSION}`;
 // The static resources that the app needs to function.
 const APP_STATIC_RESOURCES = [
   "/",
-  "/index.html",
-  "/style.css",
-  "/script.js",
-  "/manifest.json",
-  "/launcher_foreground.png",
-  "/piexif.js"
+  "index.html",
+  "style.css",
+  "script.js",
+  "manifest.json",
+  "launcher_foreground.png",
+  "piexif.js"
 ];
 
 // On install, cache the static resources
