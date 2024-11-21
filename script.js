@@ -79,6 +79,7 @@ let currentMovement = MovementTypes.None;
 const tolerance = 10;
 
 let exifObj;
+let piexifAvailable = false;
 
 img.onload = async () => {
     let hRatio = canvas.width  / img.naturalWidth    ;
@@ -175,41 +176,43 @@ async function updateImageDisplay() {
   // let objUrl = URL.createObjectURL(files[0]);
   img.src = URL.createObjectURL(files[0]);
   const blob = await files[0].arrayBuffer();
+  piexifAvailable = (globalThis.piexif !== null);
+  if (piexifAvailable) {
+    var base64 = btoa(
+      new Uint8Array(blob)
+        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+    let base64Encoded = "data:image/jpeg;base64," + base64;
+    exifObj = globalThis.piexif.load(base64Encoded);
+    for (var ifd in exifObj) {
+        if (ifd == "thumbnail") {
+            continue;
+        }
+        console.log("-" + ifd);
+        // alert("-" + ifd);
+        for (var tag in exifObj[ifd]) {
+            console.log("  " + globalThis.piexif.TAGS[ifd][tag]["name"] + ":" + exifObj[ifd][tag]);
+        }
+    }
+    let tags = globalThis.piexif.TAGS['0th'];
+    
+    let [makeTag, val] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Make') {
+                                                                        return true;}
+                                                                      });
 
-  var base64 = btoa(
-    new Uint8Array(blob)
-      .reduce((data, byte) => data + String.fromCharCode(byte), '')
-  );
-  let base64Encoded = "data:image/jpeg;base64," + base64;
-  exifObj = globalThis.piexif.load(base64Encoded);
-  for (var ifd in exifObj) {
-      if (ifd == "thumbnail") {
-          continue;
-      }
-      console.log("-" + ifd);
-      // alert("-" + ifd);
-      for (var tag in exifObj[ifd]) {
-          console.log("  " + globalThis.piexif.TAGS[ifd][tag]["name"] + ":" + exifObj[ifd][tag]);
-      }
-  }
-  let tags = globalThis.piexif.TAGS['0th'];
-  
-  let [makeTag, val] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Make') {
-                                                                      return true;}
-                                                                    });
+    let [modelTag, val2] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Model') {
+                                                                        return true;}
+    });
+    let exifInfo = '';
 
-  let [modelTag, val2] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Model') {
-                                                                      return true;}
-  });
-  let exifInfo = '';
-
-  if (makeTag) {
-    exifInfo += `Make: ${exifObj['0th'][makeTag]}\n`;
+    if (makeTag) {
+      exifInfo += `Make: ${exifObj['0th'][makeTag]}\n`;
+    }
+    if (modelTag) {
+      exifInfo += `Model: ${exifObj['0th'][modelTag]}\n`;
+    }
+    alert(exifInfo);
   }
-  if (modelTag) {
-    exifInfo += `Model: ${exifObj['0th'][modelTag]}\n`;
-  }
-  alert(exifInfo);
 }
 
 function bytesToBase64(bytes) {
@@ -220,6 +223,9 @@ function bytesToBase64(bytes) {
 }
 
 function addKeywordStringToExif(newKeyword) {
+  if (!piexifAvailable) {
+    return false;
+  }
   let tags = globalThis.piexif.TAGS['0th'];
   let [xpKeywordsTag, val3] = Object.entries(tags).find(([key, value]) => {if (value.name === 'XPKeywords') {
     return true;}
@@ -266,56 +272,58 @@ async function getImageBitmapFromFileHandle(fileHandle) {
   imageInfoLabel.innerText = `${currentFileName}: ${originalWidth}x${originalHeight}`;
   // imageInfoLabel.innerText = 'New Text';
 
-  var base64 = btoa(
-    new Uint8Array(blob)
-      .reduce((data, byte) => data + String.fromCharCode(byte), '')
-  );
-  let base64Encoded = "data:image/jpeg;base64," + base64;
-  exifObj = globalThis.piexif.load(base64Encoded);
-  for (var ifd in exifObj) {
-      if (ifd == "thumbnail") {
-          continue;
-      }
-      console.log("-" + ifd);
-      // alert("-" + ifd);
-      for (var tag in exifObj[ifd]) {
-          console.log("  " + globalThis.piexif.TAGS[ifd][tag]["name"] + ":" + exifObj[ifd][tag]);
-      }
+  if (piexifAvailable) {
+    var base64 = btoa(
+      new Uint8Array(blob)
+        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+    let base64Encoded = "data:image/jpeg;base64," + base64;
+    exifObj = globalThis.piexif.load(base64Encoded);
+    for (var ifd in exifObj) {
+        if (ifd == "thumbnail") {
+            continue;
+        }
+        console.log("-" + ifd);
+        // alert("-" + ifd);
+        for (var tag in exifObj[ifd]) {
+            console.log("  " + globalThis.piexif.TAGS[ifd][tag]["name"] + ":" + exifObj[ifd][tag]);
+        }
+    }
+    let tags = globalThis.piexif.TAGS['0th'];
+    
+    let [makeTag, val] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Make') {
+                                                                        return true;}
+                                                                      });
+
+    let [modelTag, val2] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Model') {
+                                                                        return true;}
+    });
+
+    let [xpKeywordsTag, val3] = Object.entries(tags).find(([key, value]) => {if (value.name === 'XPKeywords') {
+      return true;}
+    });
+
+    let exifInfo = '';
+
+    if (makeTag) {
+      exifInfo += `Make: ${exifObj['0th'][makeTag]}\n`;
+    }
+    if (modelTag) {
+      exifInfo += `Model: ${exifObj['0th'][modelTag]}\n`;
+    }
+
+    if (xpKeywordsTag) {
+      let byteArray = exifObj['0th'][xpKeywordsTag];
+      let strValue = '';
+      if (byteArray && byteArray.length > 0) {
+        for (let i=0; i < byteArray.length-1; i+= 2) {
+          strValue += byteArray[i] > 0 ? String.fromCodePoint(byteArray[i]) : '';
+        } 
+      }   
+      exifInfo += `Keywords: ${strValue}\n`;
+    }
+    alert(exifInfo);
   }
-  let tags = globalThis.piexif.TAGS['0th'];
-  
-  let [makeTag, val] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Make') {
-                                                                      return true;}
-                                                                    });
-
-  let [modelTag, val2] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Model') {
-                                                                      return true;}
-  });
-
-  let [xpKeywordsTag, val3] = Object.entries(tags).find(([key, value]) => {if (value.name === 'XPKeywords') {
-    return true;}
-  });
-
-  let exifInfo = '';
-
-  if (makeTag) {
-    exifInfo += `Make: ${exifObj['0th'][makeTag]}\n`;
-  }
-  if (modelTag) {
-    exifInfo += `Model: ${exifObj['0th'][modelTag]}\n`;
-  }
-
-  if (xpKeywordsTag) {
-    let byteArray = exifObj['0th'][xpKeywordsTag];
-    let strValue = '';
-    if (byteArray && byteArray.length > 0) {
-      for (let i=0; i < byteArray.length-1; i+= 2) {
-        strValue += byteArray[i] > 0 ? String.fromCodePoint(byteArray[i]) : '';
-      } 
-    }   
-    exifInfo += `Keywords: ${strValue}\n`;
-  }
-  alert(exifInfo);
   return imageBitmap;
 }
 
@@ -350,6 +358,7 @@ button.addEventListener("click", async (event) => {
   }
   else {
     alert("piefix available in window");
+    piexifAvailable = true;
   }
   let filePickerAvailable = false;
   if ('showOpenFilePicker' in window) {
@@ -663,9 +672,13 @@ saveButton.addEventListener("click", async (event) => {
   // Write the contents of the file to the stream.
   // but first add the stored exif data
 
-  let blobJpeg = await addExifDataToBlob(blob);
-
-  await writable.write(blobJpeg);
+  if (piexifAvailable) {
+    let blobJpeg = await addExifDataToBlob(blob);
+    await writable.write(blobJpeg);
+  }
+  else {
+    await writable.write(blob);
+  }
   // Close the file and write the contents to disk.
   await writable.close();
 
@@ -694,9 +707,15 @@ downloadButton.addEventListener("click", async (event) => {
     const blob = await offscreenCanvas.convertToBlob(typeOptions);
 
     // Add the stored Efix data to the blob and save
-    let blobJpeg = await addExifDataToBlob(blob);
-
-    const url = URL.createObjectURL(blobJpeg);
+    let addedKeyword = addKeywordStringToExif("TestKeyword#2");
+    let url;
+    if (piexifAvailable) {
+      let blobJpeg = await addExifDataToBlob(blob);
+      url = URL.createObjectURL(blobJpeg);
+    }
+    else {
+      url = URL.createObjectURL(blob);
+    }
 
     var a = document.createElement('a');
     a.href = url;
