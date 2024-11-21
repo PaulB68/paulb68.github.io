@@ -1,6 +1,7 @@
 {
-  "type" : "module",
+  "type": "module",
   "dependencies": {
+    "browser-sync": "^3.0.3",
     "piexifjs": "^1.0.4"
   }
 }
