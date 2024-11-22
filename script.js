@@ -743,10 +743,11 @@ getGridConfig.addEventListener("click", async (event) => {
   const lineThicknessRadio = document.getElementById("lineThickness");
   let lineThicknessStr =  lineThicknessRadio.value;
   let testLineThickness = parseInt(lineThicknessStr);
-  alert(`lineThickness is ${testLineThickness}`);
+  alert("Line thickness: " + lineThicknessStr);
   if (isNaN(testLineThickness)) {
-    gridLineThickness = testLineThickness;
+    return;
   }
+  gridLineThickness = testLineThickness;
 });
 
 const popoverDrawGrid = document.getElementById("drawGrid2");
