@@ -740,7 +740,7 @@ getGridConfig.addEventListener("click", async (event) => {
     return;
   }
   gridRows = numberOfRows;
-  const lineThicknessRadio = document.getElementById("lineThickness");
+  const lineThicknessRadio = document.getElementById("linethickness");
   let lineThicknessStr =  lineThicknessRadio.value;
   let testLineThickness = parseInt(lineThicknessStr);
   alert("Line thickness: " + lineThicknessStr);
