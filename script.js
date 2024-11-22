@@ -730,7 +730,7 @@ downloadButton.addEventListener("click", async (event) => {
 const getGridConfig = document.getElementById("gridConfig");
 
 getGridConfig.addEventListener("click", async (event) => {
-  alert("Apply clicked");
+  // alert("Apply clicked");
   const gridRowsSelector = document.getElementById("row-select");
   let options = gridRowsSelector.options;
   let i = gridRowsSelector.selectedIndex;
@@ -741,14 +741,15 @@ getGridConfig.addEventListener("click", async (event) => {
   }
   gridRows = numberOfRows;
   const lineThicknessRadio = document.getElementsByName("linethickness");
+  
   let lineThicknessStr = "2";
   for (var n = 0; n < lineThicknessRadio.length; n++) {
     if (lineThicknessRadio[n].checked) {
-        lineThicknessStr = lineThicknessRadio[i].value;
+        lineThicknessStr = lineThicknessRadio[n].value;
     }
   } 
   let testLineThickness = parseInt(lineThicknessStr);
-  alert("Line thickness: " + lineThicknessStr);
+  
   if (isNaN(testLineThickness)) {
     return;
   }
