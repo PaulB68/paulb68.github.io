@@ -743,7 +743,7 @@ getGridConfig.addEventListener("click", async (event) => {
   const lineThicknessRadio = document.getElementById("lineThickness");
   let lineThicknessStr =  lineThicknessRadio.value;
   let testLineThickness = parseInt(lineThicknessStr);
-  //alert(`lineThickness is ${testLineThickness}`);
+  alert(`lineThickness is ${testLineThickness}`);
   if (isNaN(testLineThickness)) {
     gridLineThickness = testLineThickness;
   }
