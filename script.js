@@ -39,6 +39,7 @@ let centerShift_x = 0;
 let centerShift_y = 0;
 let gridRows = 1;
 let numSquares = 2;
+let gridLineThickness = 2.0;
 
 let cropOffsetX = 0;
 let cropOffsetY = 0;
@@ -507,7 +508,7 @@ gridButton.addEventListener("click", async (event) => {
   const allVerticals = getAllVerticals(0, imageBitmap.width, Math.round(imageBitmap.width / 2), squareSize);
   // alert(allVerticals);
 
-  octx.lineWidth = 2.0;
+  octx.lineWidth = gridLineThickness;
   octx.drawImage(imageBitmap, 0, 0);
   octx.beginPath();
   // octx.moveTo(0, imageBitmap.height / 2);
@@ -724,13 +725,12 @@ downloadButton.addEventListener("click", async (event) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
 });
 
 const getGridConfig = document.getElementById("gridConfig");
 
 getGridConfig.addEventListener("click", async (event) => {
-  
+  alert("Apply clicked");
   const gridRowsSelector = document.getElementById("row-select");
   let options = gridRowsSelector.options;
   let i = gridRowsSelector.selectedIndex;
@@ -740,6 +740,13 @@ getGridConfig.addEventListener("click", async (event) => {
     return;
   }
   gridRows = numberOfRows;
+  const lineThicknessRadio = document.getElementById("lineThickness");
+  let lineThicknessStr =  lineThicknessRadio.value;
+  let testLineThickness = parseInt(lineThicknessStr);
+  //alert(`lineThickness is ${testLineThickness}`);
+  if (isNaN(testLineThickness)) {
+    gridLineThickness = testLineThickness;
+  }
 });
 
 const popoverDrawGrid = document.getElementById("drawGrid2");
