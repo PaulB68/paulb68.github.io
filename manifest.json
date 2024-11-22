@@ -1,7 +1,7 @@
 {
     "lang": "en-us",
-    "name": "Image Grid and Crop",
-    "short_name": "Image GridnCrop",
+    "name": "Image Grid and Crop v2",
+    "short_name": "Image GridnCropV2",
     "description": "A basic jpeg Image Processor for Artists",
     "start_url": "/",
     "background_color": "#2f3d58",

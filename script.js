@@ -357,7 +357,7 @@ button.addEventListener("click", async (event) => {
     alert("piefix not in window");
   }
   else {
-    alert("piefix available in window");
+    alert("piefix available");
     piexifAvailable = true;
   }
   let filePickerAvailable = false;
@@ -388,7 +388,7 @@ button.addEventListener("click", async (event) => {
     cropCanvas.height = imageBitmap.height*ratio;
   }
   else {
-    alert("File Picker not available");
+    alert("File Picker not available\nUse Download");
     if (nonFilePicker) {
       nonFilePicker.click();
       return null;
@@ -662,8 +662,8 @@ saveButton.addEventListener("click", async (event) => {
 
   const blob = await offscreenCanvas.convertToBlob(typeOptions);
   //alert("Got a blob");
-  if (!'showSaveFilePicker' in window) {
-    alert("Show Save File Picker not available");
+  if (!('showSaveFilePicker' in window)) {
+    alert("Show Save File Picker not available\non this device - Use Download");
     return;
   }
   const fileHandle = await window.showSaveFilePicker(options);
