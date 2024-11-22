@@ -740,8 +740,13 @@ getGridConfig.addEventListener("click", async (event) => {
     return;
   }
   gridRows = numberOfRows;
-  const lineThicknessRadio = document.getElementById("linethickness");
-  let lineThicknessStr =  lineThicknessRadio.value;
+  const lineThicknessRadio = document.getElementsByName("linethickness");
+  let lineThicknessStr = "2";
+  for (var n = 0; n < lineThicknessRadio.length; n++) {
+    if (lineThicknessRadio[n].checked) {
+        lineThicknessStr = lineThicknessRadio[i].value;
+    }
+  } 
   let testLineThickness = parseInt(lineThicknessStr);
   alert("Line thickness: " + lineThicknessStr);
   if (isNaN(testLineThickness)) {
