@@ -354,10 +354,10 @@ const button = document.getElementById("openButton");
 
 button.addEventListener("click", async (event) => {
   if (!globalThis.piexif) {
-    alert("piefix not in window");
+    // alert("piefix not in window");
   }
   else {
-    alert("piefix available");
+    // alert("piefix available");
     piexifAvailable = true;
   }
   let filePickerAvailable = false;
@@ -388,7 +388,7 @@ button.addEventListener("click", async (event) => {
     cropCanvas.height = imageBitmap.height*ratio;
   }
   else {
-    alert("File Picker not available\nUse Download");
+    // alert("File Picker not available");
     if (nonFilePicker) {
       nonFilePicker.click();
       return null;
