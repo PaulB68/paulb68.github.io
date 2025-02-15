@@ -554,6 +554,22 @@ async function displayCroppedImage()
   bitmapCropOffsetX = cropOffsetX /ratio;
   bitmapCropOffsetY = cropOffsetY /ratio;
 
+  // Need to check for Samsung Exif information indicating the image has been
+  // rotated to portrait format but 90 degrees counterclockwise not clockwise (why oh why?)
+  let tags = globalThis.piexif.TAGS['0th'];
+  let orientationStr = '';  
+  let [orientationTag, val] = Object.entries(tags).find(([key, value]) => {if (value.name === 'Orientation') {
+                                                                                              return true;}
+                                                                                            });
+
+  if (orientationTag) {
+    orientationStr = `${exifObj['0th'][orientationTag]}`;
+  } 
+  
+  if (orientationStr =='6') {
+    bitmapCropOffsetX = (imageBitmap.width - newCropWidth) - (cropOffsetX / ratio);
+    bitmapCropOffsetY = (imageBitmap.height - newCropHeight) - (cropOffsetY / ratio);
+  }
   ctx.clearRect(0,0,canvas.width, canvas.height);
   
   try {
@@ -737,15 +753,19 @@ getGridConfig.addEventListener("click", async (event) => {
   let numberOfRowsStr = options[i].value;
   let numberOfRows = parseInt(numberOfRowsStr);
   if (isNaN(numberOfRows)) {
-    return;
+    // do nothing
   }
-  gridRows = numberOfRows;
+  else {
+    gridRows = numberOfRows;
+  }
+
   const lineThicknessRadio = document.getElementsByName("linethickness");
   
   let lineThicknessStr = "2";
   for (var n = 0; n < lineThicknessRadio.length; n++) {
     if (lineThicknessRadio[n].checked) {
         lineThicknessStr = lineThicknessRadio[n].value;
+        break;
     }
   } 
   let testLineThickness = parseInt(lineThicknessStr);
