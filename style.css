@@ -89,6 +89,23 @@ footer {
   margin: 0;
 }
 
+#width {
+  width: 3em;
+}
+
+#height {
+  width: 3em;
+}
+
+label:enabled {
+  color: white;
+}
+
+label:disabled {
+  color:grey;
+}
+
+
 /* 
 @starting-style {
   [popover]:popover-open {

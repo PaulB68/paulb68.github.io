@@ -1216,3 +1216,37 @@ cropCanvas.addEventListener("pointerup", handleEnd, false);
 cropCanvas.addEventListener("pointerover", handleOver, false);
 cropCanvas.addEventListener("pointerleave", leavePointer, false);
 
+const cropRatios = document.getElementsByName("cropratio");
+const widthByHeightLabel = document.getElementById('widthByHeight');
+const widthField = document.getElementById('width');
+const heightField = document.getElementById('height');
+const constrainCheckbox = document.getElementById('constrain');
+// const radioLabel3x2 = document.getElementById('3x2Label');
+// const radioLabel4x3 = document.getElementById('4x3Label');
+// const radioLabel2x1 = document.getElementById('2x1Label');
+// const radioLabelCustom = document.getElementById('customLabel');
+
+
+// document.getElementById('constrain').addEventListener('change', function() 
+constrainCheckbox.addEventListener('change', function() {
+  
+  for (var i=0; i<cropRatios.length; i++) {
+    cropRatios[i].disabled=!this.checked;
+    let idString = cropRatios[i].id;
+    idString = idString+'Label'
+    let radioLabel = document.getElementById(idString);
+    radioLabel.style.color = !this.checked?'lightgrey':'black';
+  }
+  widthByHeightLabel.style.color=!this.checked?'lightgrey':'black';
+  widthField.disabled=!this.checked;
+  heightField.disabled=!this.checked;
+  // radioLabel3x2.style.color=!this.checked?'lightgrey':'black';
+  // radioLabel4x3.style.color=!this.checked?'lightgrey':'black';
+  // radioLabel2x1.style.color=!this.checked?'lightgrey':'black';
+  // radioLabelCustom.style.color=!this.checked?'lightgrey':'black';
+})
+
+
+
+
+

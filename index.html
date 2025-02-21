@@ -75,9 +75,61 @@
         <tr>
           <td>
             <button id="drawGrid2">Draw</button>
+          <!-- </td>
+          <td> -->
+            <button id="gridConfig">Set Grid</button>
           </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
           <td>
-            <button id="gridConfig">Apply</button>
+            <fieldset>
+              <legend>Constrain to Aspect Ratio</legend>
+            
+              <div>
+                <input type="checkbox" id="constrain" name="constrain" checked/>
+                <label for="constrain">Constrain</label>
+              </div>
+            
+              <div>
+                <input type="radio" id="3x2" name="cropratio" value="1.5" checked />
+                <label for="3x2" id="3x2Label">3 x 2</label>
+              </div>
+            
+              <div>
+                <input type="radio" id="4x3" name="cropratio" value="1.33" />
+                <label for="4x3" id="4x3Label">4 x 3</label>
+              </div>
+            
+              <div>
+                <input type="radio" id="2x1" name="cropratio" value="2" />
+                <label for="2x1" id="2x1Label">2 x 1</label>
+              </div>
+
+              <div>
+                <input type="radio" id="custom" name="cropratio" value="custom" />
+                <label for="custom" id="customLabel">Custom</label>
+              </div>
+              
+              <div>
+              <label id="widthByHeight">Width x Height</label>
+              </div>
+
+              <div>
+              <input type="number" id="width" name="width" min="1" max="100" step="1" value="1">
+              <!-- <label for="width">Height</label> -->
+              <input type="number" id="height" name="height" min="1" max="100" step="1" value="1">
+              </div>
+            </fieldset>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button id="drawCrop2">Draw Crop</button>
+          <!-- </td>
+          <td> -->
+            <button id="cropConfig">Set Crop</button>
           </td>
         </tr>
       </table>
