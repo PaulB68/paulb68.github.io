@@ -79,8 +79,21 @@ const MovementTypes = Object.freeze({
 let currentMovement = MovementTypes.None;
 const tolerance = 10;
 
+const DisplayModes = Object.freeze({ 
+  NoImage: 0,
+  ImageLoaded: 1,
+  GridMode: 2,
+  CropMode: 3,
+  CroppedImage : 4,
+  SavedMode : 5
+});
+
+let currentMode = DisplayModes.NoImage;
+
 let exifObj;
 let piexifAvailable = false;
+
+let globalCropConfigChanged = false;
 
 img.onload = async () => {
     let hRatio = canvas.width  / img.naturalWidth    ;
@@ -103,6 +116,7 @@ img.onload = async () => {
 
     const imageInfoLabel = document.getElementById("imageInfo");
     imageInfoLabel.innerText = `${currentFileName}: ${originalWidth}x${originalHeight}`;
+    currentMode = DisplayModes.ImageLoaded;
 }
     
   
@@ -387,6 +401,7 @@ button.addEventListener("click", async (event) => {
     cropCanvas.style.top = `${centerShift_y}` + 'px';
     cropCanvas.width = imageBitmap.width*ratio;
     cropCanvas.height = imageBitmap.height*ratio;
+    currentMode = DisplayModes.ImageLoaded;
   }
   else {
     // alert("File Picker not available");
@@ -498,7 +513,10 @@ gridButton.addEventListener("click", async (event) => {
   // ctx.moveTo(centerShift_x, centerShift_y + (imageBitmap.height*ratio) / 2);
   // ctx.lineTo(centerShift_x + imageBitmap.width*ratio, centerShift_y + (imageBitmap.height*ratio) / 2);
   // ctx.stroke();
-
+  if (!currentMode==DisplayModes.ImageLoaded) {
+    alert('Open an Image');
+    return;
+  }
   offscreenCanvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
   const octx = offscreenCanvas.getContext("2d");
 
@@ -537,6 +555,8 @@ gridButton.addEventListener("click", async (event) => {
     }
     alert(e.message);
   }
+
+  currentMode = DisplayModes.GridMode;
 
 });
 
@@ -584,6 +604,7 @@ async function displayCroppedImage()
     offscreenCanvas = new OffscreenCanvas(croppedImage.width, croppedImage.height);
     const octx = offscreenCanvas.getContext("2d");
     octx.drawImage(croppedImage, 0, 0, croppedImage.width, croppedImage.height);
+    currentMode = DisplayModes.CroppedImage;
   }
   catch(e) {
     if (!(e instanceof Error)) {
@@ -599,12 +620,15 @@ async function displayCroppedImage()
 
 cropButton.addEventListener("click", async (event) => {
 
-  if (cropVisible) {
+  if (cropVisible && currentMode == DisplayModes.CropMode) {
     await displayCroppedImage();
     cropVisible = false;
     return;
   }
-  
+  if (currentMode != DisplayModes.ImageLoaded) {
+    alert('Open an Image');
+    return;
+  }
   cropCtx = cropCanvas.getContext("2d");
   cropCtx.strokeStyle = "rgb(255 255 255)";
   cropCtx.lineWidth = 2.0;
@@ -628,6 +652,7 @@ cropButton.addEventListener("click", async (event) => {
   cropOffsetYRatio = cropCanvas.height / cropOffsetY;
 
   cropVisible = true;
+  currentMode = DisplayModes.CropMode;
 });
 
 async function addExifDataToBlob(blobIn) {
@@ -656,6 +681,10 @@ const saveButton = document.getElementById("saveButton");
 
 saveButton.addEventListener("click", async (event) => {
   
+  if (currentMode == DisplayModes.NoImage) {
+    alert('Open an image');
+    return;
+  }
   currentFileName = `TestSave ${currentFileName}`;
   //alert(`Current file name ${currentFileName}`);
 
@@ -699,11 +728,18 @@ saveButton.addEventListener("click", async (event) => {
   // Close the file and write the contents to disk.
   await writable.close();
 
+  currentMode = DisplayModes.SavedMode;
+
 });
 
 const downloadButton = document.getElementById("downloadButton");
 
 downloadButton.addEventListener("click", async (event) => {
+
+  if (currentMode == DisplayModes.NoImage) {
+    alert('Open an image');
+    return;
+  }
   const options = {
     types: [
       {
@@ -741,6 +777,8 @@ downloadButton.addEventListener("click", async (event) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    currentMode = DisplayModes.SavedMode;
 });
 
 const getGridConfig = document.getElementById("gridConfig");
@@ -1247,6 +1285,135 @@ constrainCheckbox.addEventListener('change', function() {
 })
 
 
+const cropConfigButton = document.getElementById('cropConfig');
+const altDrawCropButton = document.getElementById('drawCrop2');
+
+function checkCropConfigChanged() {
+  let cropRatioString = '1.0';
+  let cropRatioFound = false;
+  let cropConfigChanged = false;
+
+  if(constrainCheckbox.checked) {
+    cropConfigChanged = (confineToAR == false);
+    confineToAR = true;
+    for (var i=0; i<cropRatios.length; i++) {
+      if (cropRatios[i].checked) {
+        cropRatioString = cropRatios[i].value;
+        cropRatioFound = true;
+        break;
+      }
+    }
+  }
+  else {
+    cropConfigChanged = (confineToAR == true);
+    confineToAR = false;
+  }
+  if (cropRatioFound) {
+    if (cropRatioString == 'custom') {
+      let widthNum = parseInt(widthField.value);
+      let heightNum = parseInt(heightField.value);
+      if (isNaN(widthNum)) {
+        cropConfigChanged = (cropConfigChanged == true) && (confineToAR == false);
+        confineToAR = false;
+      }
+      if (isNaN(heightNum)) {
+        cropConfigChanged = (cropConfigChanged == true) && (confineToAR == false);
+        confineToAR = false;
+      }
+      let cropRatioReal = widthNum / heightNum;
+      cropConfigChanged = Math.abs(cropAspectRatio - cropRatioReal) > 0.1 || cropConfigChanged; 
+      cropAspectRatio = cropRatioReal;
+    }
+    else {
+      let cropRatioReal = parseFloat(cropRatioString);
+      if (!isNaN(cropRatioReal)) {
+        cropConfigChanged = Math.abs(cropAspectRatio - cropRatioReal) > 0.1 || cropConfigChanged; 
+        cropAspectRatio = cropRatioReal;
+      }
+      else {
+        cropConfigChanged = (cropConfigChanged == true) && (confineToAR == false);
+        confineToAR = false;      
+      }
+    }    
+  }
+  return cropConfigChanged;
+}
+
+cropConfigButton.addEventListener("click", async (event) => {
+
+  globalCropConfigChanged = checkCropConfigChanged();
+  // alert('cropChanged =' + cropChanged);
+});
+
+function constrainToAspectRatioNoMovement(rect) {
+  console.log('Before rect.left %d, rect.right %d, rect.top %d, rect.bottom %d',rect.left, rect.right, rect.top, rect.bottom);
+  let width = 0.0;
+  let height = 0.0;
+
+  width = rect.right - rect.left;
+  height = width / cropAspectRatio;
+  rect.bottom = rect.top + height;
+  if (rect.bottom > cropCanvas.height) {
+    rect.bottom = cropCanvas.height;
+    width = (rect.bottom - rect.top) * cropAspectRatio;
+    height = width / cropAspectRatio;
+    rect.right = rect.left + width;
+  }
+
+  console.log('After rect.left %d, rect.right %d, rect.top %d, rect.bottom %d',rect.left, rect.right, rect.top, rect.bottom);
+
+  cropOffsetX = rect.left;
+  cropOffsetY = rect.top;
+  cropRectangleWidth = rect.right - rect.left;
+  cropRectangleHeight = rect.bottom - rect.top;
+}
+
+altDrawCropButton.addEventListener("click", async (event) => {
+
+  //alert('altDrawCropButton called');
+  if (currentMode == DisplayModes.NoImage) {
+    alert('Load an Image');
+    return;
+  }
+  
+  if (!cropVisible) {
+    cropCtx = cropCanvas.getContext("2d");
+    cropCtx.strokeStyle = "rgb(255 255 255)";
+    cropCtx.lineWidth = 2.0;
+
+    cropRectangleWidth = cropCanvas.width * cropWidthRatio;
+    cropRectangleHeight = cropRectangleWidth / cropAspectRatio;
+    cropHeightRatio = cropRectangleHeight / cropCanvas.height;
+    if (cropRectangleHeight > cropCanvas.height) {
+      cropRectangleHeight = cropCanvas.height;
+      cropRectangleWidth = cropRectangleHeight * cropAspectRatio;
+      cropWidthRatio = cropRectangleWidth / cropCanvas.width;
+      cropHeightRatio = cropRectangleHeight / cropCanvas.height;
+    }
+    
+    cropOffsetX = (cropCanvas.width - cropRectangleWidth) / 2;
+    cropOffsetY = (cropCanvas.height - cropRectangleHeight) / 2;
+
+    cropCtx.strokeRect(cropOffsetX, cropOffsetY, cropRectangleWidth, cropRectangleHeight);
+
+    cropOffsetXRatio = cropCanvas.width / cropOffsetX;
+    cropOffsetYRatio = cropCanvas.height / cropOffsetY;
+
+    cropVisible = true;
+    return;
+  }
+  // alert('altDrawCropButton pre cropChanged check');
+  if (globalCropConfigChanged) {
+    // alert('altDrawCropButton in cropChanged');
+    if (confineToAR) {
+        // Recalculate crop rectangle
+        constrainToAspectRatioNoMovement(cropRectangle);
+        cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        cropCtx.strokeRect(cropOffsetX, cropOffsetY, cropRectangleWidth, cropRectangleHeight);
+    }
+    globalCropConfigChanged = false;
+  }
+});
 
 
 
