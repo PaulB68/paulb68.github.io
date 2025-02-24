@@ -28,7 +28,7 @@ footer {
  position: fixed;
  left: 0;
  top: 0;
- border: 3px solid red;
+ border: 3px solid rgb(232, 229, 229);
  touch-action: none;
  /* fill: black; 
  position: fixed;

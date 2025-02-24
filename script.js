@@ -604,6 +604,9 @@ async function displayCroppedImage()
     offscreenCanvas = new OffscreenCanvas(croppedImage.width, croppedImage.height);
     const octx = offscreenCanvas.getContext("2d");
     octx.drawImage(croppedImage, 0, 0, croppedImage.width, croppedImage.height);
+    cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+    cropCanvas.style.opacity = '0';
+    cropVisible = false;
     currentMode = DisplayModes.CroppedImage;
   }
   catch(e) {
@@ -629,6 +632,7 @@ cropButton.addEventListener("click", async (event) => {
     alert('Open an Image');
     return;
   }
+  cropCanvas.style.opacity = '1';
   cropCtx = cropCanvas.getContext("2d");
   cropCtx.strokeStyle = "rgb(255 255 255)";
   cropCtx.lineWidth = 2.0;
@@ -1377,6 +1381,7 @@ altDrawCropButton.addEventListener("click", async (event) => {
   }
   
   if (!cropVisible) {
+    cropCanvas.style.opacity = '1';
     cropCtx = cropCanvas.getContext("2d");
     cropCtx.strokeStyle = "rgb(255 255 255)";
     cropCtx.lineWidth = 2.0;
