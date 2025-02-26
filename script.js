@@ -650,6 +650,11 @@ cropButton.addEventListener("click", async (event) => {
   cropOffsetX = (cropCanvas.width - cropRectangleWidth) / 2;
   cropOffsetY = (cropCanvas.height - cropRectangleHeight) / 2;
 
+  cropRectangle.left = cropOffsetX;
+  cropRectangle.right = cropOffsetX + cropRectangleWidth;
+  cropRectangle.top = cropOffsetY;
+  cropRectangle.bottom = cropOffsetY + cropRectangleHeight;
+
   cropCtx.strokeRect(cropOffsetX, cropOffsetY, cropRectangleWidth, cropRectangleHeight);
 
   cropOffsetXRatio = cropCanvas.width / cropOffsetX;
