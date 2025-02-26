@@ -1410,6 +1410,7 @@ altDrawCropButton.addEventListener("click", async (event) => {
   // alert('altDrawCropButton pre cropChanged check');
   if (globalCropConfigChanged) {
     // alert('altDrawCropButton in cropChanged');
+    cropCanvas.style.opacity = '1';
     if (confineToAR) {
         // Recalculate crop rectangle
         constrainToAspectRatioNoMovement(cropRectangle);
