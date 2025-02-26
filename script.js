@@ -1364,7 +1364,7 @@ function constrainToAspectRatioNoMovement(rect) {
     rect.right = rect.left + width;
   }
 
-  console.log('After rect.left %d, rect.right %d, rect.top %d, rect.bottom %d',rect.left, rect.right, rect.top, rect.bottom);
+  alert(`After rect.left ${rect.left}, rect.right ${rect.right}, rect.top ${rect.top}, rect.bottom ${rect.bottom}`);
 
   cropOffsetX = rect.left;
   cropOffsetY = rect.top;
