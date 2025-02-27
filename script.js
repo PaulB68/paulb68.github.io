@@ -1355,7 +1355,7 @@ cropConfigButton.addEventListener("click", async (event) => {
 });
 
 function constrainToAspectRatioNoMovement(rect) {
-  alert(`Before rect.left ${rect.left}, rect.right ${rect.right}, rect.top ${rect.top}, rect.bottom ${rect.bottom}`);
+  // alert(`Before rect.left ${rect.left}, rect.right ${rect.right}, rect.top ${rect.top}, rect.bottom ${rect.bottom}`);
   let width = 0.0;
   let height = 0.0;
 
@@ -1363,14 +1363,14 @@ function constrainToAspectRatioNoMovement(rect) {
   height = width / cropAspectRatio;
   rect.bottom = rect.top + height;
   if (rect.bottom > cropCanvas.height) {
-    alert('Inside block rect.bottom > cropCanvas.height')
+    // alert('Inside block rect.bottom > cropCanvas.height')
     rect.bottom = cropCanvas.height;
     width = (rect.bottom - rect.top) * cropAspectRatio;
     height = width / cropAspectRatio;
     rect.right = rect.left + width;
   }
 
-  alert(`After rect.left ${rect.left}, rect.right ${rect.right}, rect.top ${rect.top}, rect.bottom ${rect.bottom}`);
+  // alert(`After rect.left ${rect.left}, rect.right ${rect.right}, rect.top ${rect.top}, rect.bottom ${rect.bottom}`);
 
   cropOffsetX = rect.left;
   cropOffsetY = rect.top;
