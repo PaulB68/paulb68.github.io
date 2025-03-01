@@ -62,6 +62,7 @@ footer {
 #buttonTable {
   table-layout: auto;
   width: 500px;
+  z-index: 1;
 }
 
 /* td {
