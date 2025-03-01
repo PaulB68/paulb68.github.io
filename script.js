@@ -30,6 +30,7 @@ gridInfo.innerText = `Canvas Size: ${width} x ${height}`
 
 const img = new Image();
 let imageBitmap;
+let globalCroppedImage;
 let currentFileName = '';
 let originalWidth = 0;
 let originalHeight = 0;
@@ -123,6 +124,22 @@ img.onload = async () => {
 async function redraw() {
   
   if (imageBitmap ==null) {
+    return;
+  }
+  if (currentMode == DisplayModes.CroppedImage) {
+    if (!globalCroppedImage == null) {
+    }
+    else {
+      // recreate it here
+    }
+    let hRatio = canvas.width  / globalCroppedImage.width;
+    let vRatio =  canvas.height / globalCroppedImage.height;
+    let ratio  = Math.min ( hRatio, vRatio );
+    centerShift_x = ( canvas.width - globalCroppedImage.width*ratio ) / 2;
+    centerShift_y = ( canvas.height - globalCroppedImage.height*ratio ) / 2; 
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.drawImage(globalCroppedImage, 0, 0, globalCroppedImage.width, globalCroppedImage.height,
+        centerShift_x, centerShift_y, globalCroppedImage.width*ratio, globalCroppedImage.height*ratio );
     return;
   }
   let hRatio = canvas.width  / imageBitmap.width    ;
@@ -560,7 +577,7 @@ gridButton.addEventListener("click", async (event) => {
 
 });
 
-async function displayCroppedImage()
+async function  displayCroppedImage()
 {
   let newCropWidth = 0.0;
   let newCropHeight = 0.0;
@@ -608,6 +625,7 @@ async function displayCroppedImage()
     cropCanvas.style.opacity = '0';
     cropVisible = false;
     currentMode = DisplayModes.CroppedImage;
+    globalCroppedImage = await createImageBitmap(croppedImage);
   }
   catch(e) {
     if (!(e instanceof Error)) {
