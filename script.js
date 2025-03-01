@@ -30,7 +30,7 @@ gridInfo.innerText = `Canvas Size: ${width} x ${height}`
 
 const img = new Image();
 let imageBitmap;
-let globalCroppedImage;
+let croppedImage;
 let currentFileName = '';
 let originalWidth = 0;
 let originalHeight = 0;
@@ -127,19 +127,20 @@ async function redraw() {
     return;
   }
   if (currentMode == DisplayModes.CroppedImage) {
-    if (!globalCroppedImage == null) {
-    }
-    else {
-      // recreate it here
-    }
-    let hRatio = canvas.width  / globalCroppedImage.width;
-    let vRatio =  canvas.height / globalCroppedImage.height;
+    // if (!globalCroppedImage == null) {
+    // }
+    // else {
+    //   // recreate it here
+    // }
+    let hRatio = canvas.width  / croppedImage.width;
+    let vRatio =  canvas.height / croppedImage.height;
     let ratio  = Math.min ( hRatio, vRatio );
-    centerShift_x = ( canvas.width - globalCroppedImage.width*ratio ) / 2;
-    centerShift_y = ( canvas.height - globalCroppedImage.height*ratio ) / 2; 
+    let centerShift_x = ( canvas.width - croppedImage.width*ratio ) / 2;
+    let centerShift_y = ( canvas.height - croppedImage.height*ratio ) / 2; 
     ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.drawImage(globalCroppedImage, 0, 0, globalCroppedImage.width, globalCroppedImage.height,
-        centerShift_x, centerShift_y, globalCroppedImage.width*ratio, globalCroppedImage.height*ratio );
+    ctx.drawImage(croppedImage, 0, 0, croppedImage.width, croppedImage.height,
+        centerShift_x, centerShift_y, croppedImage.width*ratio, croppedImage.height*ratio );
+    cropVisible= false;
     return;
   }
   let hRatio = canvas.width  / imageBitmap.width    ;
@@ -610,7 +611,7 @@ async function  displayCroppedImage()
   ctx.clearRect(0,0,canvas.width, canvas.height);
   
   try {
-    const croppedImage = await createImageBitmap(imageBitmap, bitmapCropOffsetX, bitmapCropOffsetY, newCropWidth, newCropHeight);
+    croppedImage = await createImageBitmap(imageBitmap, bitmapCropOffsetX, bitmapCropOffsetY, newCropWidth, newCropHeight);
     let hRatio = canvas.width  / croppedImage.width;
     let vRatio =  canvas.height / croppedImage.height;
     ratio  = Math.min ( hRatio, vRatio );
@@ -625,7 +626,7 @@ async function  displayCroppedImage()
     cropCanvas.style.opacity = '0';
     cropVisible = false;
     currentMode = DisplayModes.CroppedImage;
-    globalCroppedImage = await createImageBitmap(croppedImage);
+    // globalCroppedImage = await createImageBitmap(croppedImage);
   }
   catch(e) {
     if (!(e instanceof Error)) {
