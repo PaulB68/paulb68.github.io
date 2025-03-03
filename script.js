@@ -32,6 +32,10 @@ const img = new Image();
 let imageBitmap;
 let croppedImage;
 let currentFileName = '';
+let filenameNoExtension = '';
+let saveFileSuffix = 'Crop 3x2';
+let suggestedFilename = '';
+
 let originalWidth = 0;
 let originalHeight = 0;
 let offscreenCanvas;
@@ -39,6 +43,7 @@ let ratio  = 1.0;
 let centerShift_x = 0;
 let centerShift_y = 0;
 let gridRows = 1;
+let allVerticals = 1;
 let numSquares = 2;
 let gridLineThickness = 2.0;
 
@@ -90,6 +95,7 @@ const DisplayModes = Object.freeze({
 });
 
 let currentMode = DisplayModes.NoImage;
+let previousMode = DisplayModes.NoImage;
 
 let exifObj;
 let piexifAvailable = false;
@@ -117,6 +123,7 @@ img.onload = async () => {
 
     const imageInfoLabel = document.getElementById("imageInfo");
     imageInfoLabel.innerText = `${currentFileName}: ${originalWidth}x${originalHeight}`;
+    previousMode = currentMode;
     currentMode = DisplayModes.ImageLoaded;
 }
     
@@ -126,12 +133,9 @@ async function redraw() {
   if (imageBitmap ==null) {
     return;
   }
-  if (currentMode == DisplayModes.CroppedImage) {
-    // if (!globalCroppedImage == null) {
-    // }
-    // else {
-    //   // recreate it here
-    // }
+  if (currentMode == DisplayModes.CroppedImage || 
+      (currentMode == DisplayModes.SavedMode && previousMode == DisplayModes.CroppedImage)) {
+    
     let hRatio = canvas.width  / croppedImage.width;
     let vRatio =  canvas.height / croppedImage.height;
     let ratio  = Math.min ( hRatio, vRatio );
@@ -206,6 +210,7 @@ async function updateImageDisplay() {
   let files = nonFilePicker.files;
   // let file = files[0];
   currentFileName = files[0].name;
+  filenameNoExtension = currentFileName.substring(0, currentFileName.lastIndexOf('.')) || currentFileName;
   // let objUrl = URL.createObjectURL(files[0]);
   img.src = URL.createObjectURL(files[0]);
   const blob = await files[0].arrayBuffer();
@@ -291,6 +296,7 @@ async function getImageBitmapFromFileHandle(fileHandle) {
   // Get the file from the file handle
   const file = await fileHandle.getFile();
   currentFileName = file.name;
+  filenameNoExtension = currentFileName.substring(0, currentFileName.lastIndexOf('.')) || currentFileName;
   
   // Create a Blob from the file
   const blob = await file.arrayBuffer();
@@ -419,6 +425,7 @@ button.addEventListener("click", async (event) => {
     cropCanvas.style.top = `${centerShift_y}` + 'px';
     cropCanvas.width = imageBitmap.width*ratio;
     cropCanvas.height = imageBitmap.height*ratio;
+    previousMode = currentMode;
     currentMode = DisplayModes.ImageLoaded;
   }
   else {
@@ -541,7 +548,7 @@ gridButton.addEventListener("click", async (event) => {
   const allHorizontals = getAllHorizontals(0, imageBitmap.height, Math.round(imageBitmap.height / 2), gridRows);
   // alert (allHorizontals);
   const squareSize = allHorizontals.length >= 2 ?  allHorizontals[1] - allHorizontals[0] : imageBitmap.width / 2;
-  const allVerticals = getAllVerticals(0, imageBitmap.width, Math.round(imageBitmap.width / 2), squareSize);
+  allVerticals = getAllVerticals(0, imageBitmap.width, Math.round(imageBitmap.width / 2), squareSize);
   // alert(allVerticals);
 
   octx.lineWidth = gridLineThickness;
@@ -573,8 +580,9 @@ gridButton.addEventListener("click", async (event) => {
     }
     alert(e.message);
   }
-
+  previousMode = currentMode;
   currentMode = DisplayModes.GridMode;
+  saveFileSuffix = `Grid ${gridRows} x ${allVerticals.length}`;
 
 });
 
@@ -625,8 +633,8 @@ async function  displayCroppedImage()
     cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
     cropCanvas.style.opacity = '0';
     cropVisible = false;
+    previousMode = currentMode;
     currentMode = DisplayModes.CroppedImage;
-    // globalCroppedImage = await createImageBitmap(croppedImage);
   }
   catch(e) {
     if (!(e instanceof Error)) {
@@ -680,6 +688,7 @@ cropButton.addEventListener("click", async (event) => {
   cropOffsetYRatio = cropCanvas.height / cropOffsetY;
 
   cropVisible = true;
+  previousMode = currentMode;
   currentMode = DisplayModes.CropMode;
 });
 
@@ -713,8 +722,8 @@ saveButton.addEventListener("click", async (event) => {
     alert('Open an image');
     return;
   }
-  currentFileName = `TestSave ${currentFileName}`;
-  //alert(`Current file name ${currentFileName}`);
+  suggestedFilename = `${filenameNoExtension} - ${saveFileSuffix}.jpg`;
+  alert(`Current file name ${suggestedFilename}`);
 
   // This version takes the image from the offscreen canvas
   const options = {
@@ -727,7 +736,7 @@ saveButton.addEventListener("click", async (event) => {
           },
         ],
         startIn : 'pictures',
-        suggestedName : currentFileName.length == 0 ?'TestSave v1.jpg': currentFileName
+        suggestedName : suggestedFilename
       };
   const typeOptions = {
     type: 'image/jpeg',
@@ -755,7 +764,7 @@ saveButton.addEventListener("click", async (event) => {
   }
   // Close the file and write the contents to disk.
   await writable.close();
-
+  previousMode = currentMode;
   currentMode = DisplayModes.SavedMode;
 
 });
@@ -768,6 +777,7 @@ downloadButton.addEventListener("click", async (event) => {
     alert('Open an image');
     return;
   }
+  suggestedFilename = `${filenameNoExtension} - ${saveFileSuffix}.jpg`;
   const options = {
     types: [
       {
@@ -778,7 +788,7 @@ downloadButton.addEventListener("click", async (event) => {
       },
     ],
     startIn : 'pictures',
-    suggestedName : 'TestSave v1.jpg'
+    suggestedName : suggestedFilename
     };
     const typeOptions = {
     type: 'image/jpeg',
@@ -788,7 +798,7 @@ downloadButton.addEventListener("click", async (event) => {
     const blob = await offscreenCanvas.convertToBlob(typeOptions);
 
     // Add the stored Efix data to the blob and save
-    let addedKeyword = addKeywordStringToExif("TestKeyword#2");
+    let addedKeyword = addKeywordStringToExif(saveFileSuffix);
     let url;
     if (piexifAvailable) {
       let blobJpeg = await addExifDataToBlob(blob);
@@ -800,12 +810,12 @@ downloadButton.addEventListener("click", async (event) => {
 
     var a = document.createElement('a');
     a.href = url;
-    a.download = currentFileName.length == 0 ?'TestSave v1.jpg': currentFileName;
+    a.download = suggestedFilename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
+    previousMode = currentMode;
     currentMode = DisplayModes.SavedMode;
 });
 
@@ -1327,6 +1337,7 @@ function checkCropConfigChanged() {
     for (var i=0; i<cropRatios.length; i++) {
       if (cropRatios[i].checked) {
         cropRatioString = cropRatios[i].value;
+        saveFileSuffix  = `Crop ${cropRatios[i].id}`;
         cropRatioFound = true;
         break;
       }
@@ -1351,6 +1362,7 @@ function checkCropConfigChanged() {
       let cropRatioReal = widthNum / heightNum;
       cropConfigChanged = Math.abs(cropAspectRatio - cropRatioReal) > 0.1 || cropConfigChanged; 
       cropAspectRatio = cropRatioReal;
+      saveFileSuffix = `Crop Custom ${widthNum}x${heightNum}`;
     }
     else {
       let cropRatioReal = parseFloat(cropRatioString);
