@@ -102,6 +102,14 @@ let piexifAvailable = false;
 
 let globalCropConfigChanged = false;
 
+const saveButton = document.getElementById("saveButton");
+
+if (!('showSaveFilePicker' in window)) {
+  saveButton.style.display='none';
+  // saveButton.enabled=false;
+  // saveButton.style.color = 'lightgrey';
+}
+
 img.onload = async () => {
     let hRatio = canvas.width  / img.naturalWidth    ;
     let vRatio =  canvas.height / img.naturalHeight  ;
@@ -714,7 +722,7 @@ async function addExifDataToBlob(blobIn) {
   return blobJpeg;
 }
 
-const saveButton = document.getElementById("saveButton");
+// const saveButton = document.getElementById("saveButton");
 
 saveButton.addEventListener("click", async (event) => {
   
