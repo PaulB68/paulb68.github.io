@@ -759,7 +759,7 @@ saveButton.addEventListener("click", async (event) => {
   }
   const fileHandle = await window.showSaveFilePicker(options);
   const writable = await fileHandle.createWritable();
-  let addedKeyword = addKeywordStringToExif("TestKeyword#2");
+  let addedKeyword = addKeywordStringToExif(saveFileSuffix);
   // Write the contents of the file to the stream.
   // but first add the stored exif data
 
@@ -1448,7 +1448,7 @@ altDrawCropButton.addEventListener("click", async (event) => {
 
     cropOffsetXRatio = cropCanvas.width / cropOffsetX;
     cropOffsetYRatio = cropCanvas.height / cropOffsetY;
-
+    currentMode = DisplayModes.CropMode;
     cropVisible = true;
     return;
   }
